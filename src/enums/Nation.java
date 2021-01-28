@@ -5,7 +5,7 @@ import java.awt.*;
 public enum Nation {
     YELLOW(Colors.GREEN.color, Colors.YELLOW.color),
     GREEN(Colors.YELLOW.color, Colors.GREEN.color),
-    NEUTRAL(Colors.RED.color,Colors.TRANSPARENT.color);
+    NEUTRAL(Colors.RED.color, Colors.TRANSPARENT.color);
 
     public Color borderColor;
     public Color fillColor;

@@ -54,7 +54,14 @@ public class Team {
         }
         return null;
     }
-    public boolean remove(Pawn pawn){
+
+    /**
+     * Removes a pawn from this team instance
+     *
+     * @param pawn The pawn to be removed
+     * @return true if the removal is successful, otherwise - false
+     */
+    public boolean remove(Pawn pawn) {
         return members.remove(pawn);
     }
 

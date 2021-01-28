@@ -1,6 +1,7 @@
 package board;
 
 import Teams.TeamManager;
+import application.PopUp;
 import enums.Colors;
 import turtle.TurtleManager;
 
@@ -120,6 +121,9 @@ public class GameBoard extends JFrame implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent e) {
         if (teamManager.movePawn(e)) this.repaint();
+        if (teamManager.getWinner() != null) {
+            new PopUp(this, "Game Over", "The winner is " + teamManager.getWinner().nation);
+        }
     }
 
     /**

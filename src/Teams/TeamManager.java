@@ -62,6 +62,22 @@ public class TeamManager {
 
     }
 
+    /**
+     * Determinate if there is a winner in the game
+     * @return The Leader that occupies the winning spot
+     */
+    public Pawn getWinner() {
+        Pawn winner = getPawnOnSelectedTile(new Point(2, 2));
+        if (winner == null) return null;
+        if (winner.getClass().getSimpleName().equals("Leader")) return winner;
+        else return null;
+    }
+
+    /**
+     * Contains logic for the collision between a guard and a turtle
+     * @param selectedTile The destination of the guard
+     * @return true if a removal is made, if not - false
+     */
     private boolean calculateCollision(Point selectedTile) {
         if (selectedPawn.getClass().getSimpleName().equals("Guard"))
             if (turtleManager.getTurtle(selectedTile) != null) {
@@ -73,10 +89,20 @@ public class TeamManager {
         return false;
     }
 
+    /**
+     * Removes a pawn from whichever team it belongs to
+     * @param selectedPawn The pawn to be removed
+     */
     private void removePawn(Pawn selectedPawn) {
         if (!yellowTeam.remove(selectedPawn)) greenTeam.remove(selectedPawn);
     }
 
+    /**
+     * Moves a pawn if possible
+     * @param result The pawn
+     * @param selectedTile The move-to tile
+     * @return true if a board modification is made
+     */
     private boolean movePawn(Pawn result, Point selectedTile) {
         if (result == null && selectedPawn != null) {
             if (validateMove(selectedTile, selectedPawn)) {
@@ -88,6 +114,11 @@ public class TeamManager {
         return false;
     }
 
+    /**
+     * Changes the currently selected pawn
+     * @param result the newly selected pawn
+     * @return false, because no board modification is made
+     */
     private boolean changeSelectedPawn(Pawn result) {
         if (result != null) {
             selectedPawn = result;
@@ -124,6 +155,10 @@ public class TeamManager {
         };
     }
 
+    /**
+     * Checks whether a turtle can move. It can`t
+     * @return false, because a turtle cant move
+     */
     private boolean isValidTurtleMove() {
         System.out.println("Turtle can`t move!");
         return false;

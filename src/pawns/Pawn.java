@@ -4,7 +4,7 @@ import application.Entity;
 import enums.Nation;
 
 
-public abstract class Pawn extends Entity{
+public abstract class Pawn extends Entity {
 
     protected final int sizeScale = 2;
     protected final int offsetScale = 2;
