@@ -67,4 +67,10 @@ public abstract class Entity {
         this.yPos = newPos;
         this.coordY = yPos * entitySize + yPos + offset;
     }
+    /**
+     * Method, used by instances of derived classes
+     *
+     * @param g Graphics base class
+     */
+    public abstract void render(Graphics g);
 }

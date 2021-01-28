@@ -3,6 +3,8 @@ package Teams;
 import application.Entity;
 import enums.Nation;
 import pawns.Pawn;
+import turtle.Turtle;
+import turtle.TurtleManager;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -12,6 +14,8 @@ public class TeamManager {
     Team greenTeam;
     Team yellowTeam;
     Pawn selectedPawn = null;
+    TurtleManager turtleManager;
+
 
     /**
      * Constructor for a TeamManager instance.Used for team interactions. Initializes two teams - Yellow and Green
@@ -19,19 +23,23 @@ public class TeamManager {
     public TeamManager() {
         this.yellowTeam = new Team(Nation.YELLOW, 0, false);
         this.greenTeam = new Team(Nation.GREEN, 4, true);
+        this.turtleManager = new TurtleManager(2, 5);
     }
 
     /**
      * Renders the two teams on the board
+     *
      * @param g Graphics component
      */
     public void paintTeams(Graphics g) {
         yellowTeam.render(g);
         greenTeam.render(g);
+        turtleManager.paintTurtles(g);
     }
 
     /**
      * Controls the mouse click interaction with the pawns on the board.
+     *
      * @param e the event to be processed
      * @return true if a move is successfully made, otherwise false
      */
@@ -42,23 +50,55 @@ public class TeamManager {
 
         Pawn result = getPawnOnSelectedTile(selectedTile);
 
+        if (movePawn(result, selectedTile)) return true;
+
+        if (selectedPawn != null && result != null)
+            if (calculateCollision(selectedTile)) {
+                selectedPawn = null;
+                return true;
+            }
+
+        return changeSelectedPawn(result);
+
+    }
+
+    private boolean calculateCollision(Point selectedTile) {
+        if (selectedPawn.getClass().getSimpleName().equals("Guard"))
+            if (turtleManager.getTurtle(selectedTile) != null) {
+                turtleManager.remove(turtleManager.getTurtle(selectedTile));
+                removePawn(selectedPawn);
+                System.out.println("Should have removed turtle");
+                return true;
+            }
+        return false;
+    }
+
+    private void removePawn(Pawn selectedPawn) {
+        if (!yellowTeam.remove(selectedPawn)) greenTeam.remove(selectedPawn);
+    }
+
+    private boolean movePawn(Pawn result, Point selectedTile) {
         if (result == null && selectedPawn != null) {
             if (validateMove(selectedTile, selectedPawn)) {
                 movePawn(selectedTile, selectedPawn);
+                selectedPawn = null;
                 return true;
             }
         }
-        if (result != null && selectedPawn == null) {
-            selectedPawn = result;
-            result = null;
-        }
-        if (result != null) selectedPawn = result;
+        return false;
+    }
 
+    private boolean changeSelectedPawn(Pawn result) {
+        if (result != null) {
+            selectedPawn = result;
+            System.out.printf("Selected %s %s\n", selectedPawn.nation, selectedPawn.getClass().getSimpleName());
+        }
         return false;
     }
 
     /**
      * Changes the position of a pawn to a new position on the board
+     *
      * @param selectedTile The position of the board for the pawn to be moved on
      * @param selectedPawn The pawn whose position will be changed
      */
@@ -70,6 +110,7 @@ public class TeamManager {
 
     /**
      * Validates a new position for a pawn to be placed on
+     *
      * @param selectedTile The tile that will be checked whether it is a valid move-to position for a pawn
      * @param selectedPawn The pawn whose new position will be checked as valid or invalid
      * @return true if the new position for the pawn is valid, otherwise - false
@@ -78,12 +119,19 @@ public class TeamManager {
         return switch (selectedPawn.getClass().getSimpleName()) {
             case "Leader" -> isValidLeaderMove(selectedTile, selectedPawn);
             case "Guard" -> isValidGuardMove(selectedTile, selectedPawn);
+            case "Turtle" -> isValidTurtleMove();
             default -> false;
         };
     }
 
+    private boolean isValidTurtleMove() {
+        System.out.println("Turtle can`t move!");
+        return false;
+    }
+
     /**
      * Checks whether a new position for a Leader pawn is valid
+     *
      * @param selectedTile The position to be checked
      * @param selectedPawn The leader pawn
      * @return true if the new position is a valid one, otherwise - false
@@ -104,6 +152,7 @@ public class TeamManager {
 
     /**
      * Verifies if a move upwards for a Leader pawn is valid
+     *
      * @param selectedTile The position to be checked
      * @param selectedPawn The leader pawn
      * @return true if the new position is a valid one, otherwise - false
@@ -122,8 +171,10 @@ public class TeamManager {
 
         return possibleDest.y == selectedTile.y;
     }
+
     /**
      * Verifies if a move downwards for a Leader pawn is valid
+     *
      * @param selectedTile The position to be checked
      * @param selectedPawn The leader pawn
      * @return true if the new position is a valid one, otherwise - false
@@ -142,8 +193,10 @@ public class TeamManager {
 
         return possibleDest.y == selectedTile.y;
     }
+
     /**
      * Verifies if a move to the right of the current position for a Leader pawn is valid
+     *
      * @param selectedTile The position to be checked
      * @param selectedPawn The leader pawn
      * @return true if the new position is a valid one, otherwise - false
@@ -162,8 +215,10 @@ public class TeamManager {
 
         return possibleDest.x == selectedTile.x;
     }
+
     /**
      * Verifies if a move to the left of the current position for a Leader pawn is valid
+     *
      * @param selectedTile The position to be checked
      * @param selectedPawn The leader pawn
      * @return true if the new position is a valid one, otherwise - false
@@ -185,6 +240,7 @@ public class TeamManager {
 
     /**
      * Checks whether a new position for a Guard pawn is valid
+     *
      * @param selectedTile The position to be checked
      * @param selectedPawn The guard pawn
      * @return true if the new position is a valid one, otherwise - false
@@ -196,6 +252,7 @@ public class TeamManager {
 
     /**
      * Checks whether a horizontal reposition for a Guard pawn is valid
+     *
      * @param selectedTile The position to be checked
      * @param selectedPawn The guard pawn
      * @return true if the new position is a valid one, otherwise - false
@@ -204,8 +261,10 @@ public class TeamManager {
         return Math.abs(selectedTile.x - selectedPawn.getXPos()) == 1 &&
                 Math.abs(selectedTile.y - selectedPawn.getYPos()) == 0;
     }
+
     /**
      * Checks whether a vertical reposition for a Guard pawn is valid
+     *
      * @param selectedTile The position to be checked
      * @param selectedPawn The guard pawn
      * @return true if the new position is a valid one, otherwise - false
@@ -217,19 +276,27 @@ public class TeamManager {
 
     /**
      * Checks whether a pawn is located on a specified tile on the board
+     *
      * @param selectedTile Position of the pawn
      * @return Reference to the pawn instance if a pawn is located on the specified position. If no pawn is found returns null
      */
     private Pawn getPawnOnSelectedTile(Point selectedTile) {
         Pawn resYellow = yellowTeam.getPawn(selectedTile);
         Pawn resGreen = greenTeam.getPawn(selectedTile);
+        Turtle turtle = turtleManager.getTurtle(selectedTile);
 
-        if (resYellow != null) return resYellow;
-        return resGreen;
+        if (resYellow != null) {
+            return resYellow;
+        }
+        if (resGreen != null) {
+            return resGreen;
+        }
+        return turtle;
     }
 
     /**
      * Checks whether a click is made within the boundaries of the board
+     *
      * @param selection Position where the click was made
      * @return true if the click is on a board tile, false if the click is made outside of the board
      */
@@ -240,6 +307,7 @@ public class TeamManager {
 
     /**
      * Converts a click position in tile location from pixel coordinates
+     *
      * @param e e the event to be processed
      * @return The converted tile position of the click that was made.
      * Note: A invalid position could be returned if the click was made outside the board

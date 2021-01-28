@@ -8,7 +8,9 @@ public enum Colors {
     GRAPHITE(new Color(68, 68, 68)),
     GREEN(new Color(34, 177, 76)),
     YELLOW(new Color(255, 242, 0)),
-    WHITE(new Color(255, 255, 255));
+    WHITE(new Color(255, 255, 255)),
+    RED(new Color (255,0,0)),
+    TRANSPARENT(new Color(0,0,0,0));
 
     public Color color;
 

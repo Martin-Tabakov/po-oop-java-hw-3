@@ -3,7 +3,6 @@ package pawns;
 import application.Entity;
 import enums.Nation;
 
-import java.awt.*;
 
 public abstract class Pawn extends Entity{
 
@@ -11,6 +10,7 @@ public abstract class Pawn extends Entity{
     protected final int offsetScale = 2;
     protected int inTileOffset;
     protected int pawnSize;
+    public final Nation nation;
 
     /**
      * @param xPos   Horizontal position on the gameBoard
@@ -19,16 +19,12 @@ public abstract class Pawn extends Entity{
      */
     protected Pawn(int xPos, int yPos, Nation nation) {
         super(xPos, yPos);
+        this.nation = nation;
         this.borderColor = nation.borderColor;
         this.fillColor = nation.fillColor;
         this.inTileOffset = offset / offsetScale;
         this.pawnSize = entitySize / sizeScale;
     }
 
-    /**
-     * Method, used by instances of derived classes
-     *
-     * @param g Graphics base class
-     */
-    public abstract void render(Graphics g);
+
 }

@@ -54,6 +54,9 @@ public class Team {
         }
         return null;
     }
+    public boolean remove(Pawn pawn){
+        return members.remove(pawn);
+    }
 
     /**
      * Renders all members of the current team on the board
